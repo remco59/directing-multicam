@@ -172,10 +172,10 @@ The resulting file preserves `reason` and `confidence` as extra fields while ret
 directing-multicam render edl.json --output preview.mp4
 ```
 
-Extra renderer flags can be passed after `--`, for example:
+Extra renderer flags can be forwarded with `--passthrough`, for example:
 
 ```bash
-directing-multicam render edl.json --output preview.mp4 -- \
+directing-multicam render edl.json --output preview.mp4 --passthrough \
   --width 1080 --height 1920 --fill --log slog3
 ```
 

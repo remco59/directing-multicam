@@ -77,15 +77,10 @@ def prepare(args: argparse.Namespace) -> int:
     cameras = [read_camera(i, media) for i, media in enumerate(inputs)]
     durations = [ffprobe_duration(media) for media in inputs]
 
-    finite_ends = []
-    for cam, source_duration in zip(cameras, durations):
-        coverage_end = cam.coverage[1]
-        if coverage_end == float("inf"):
-            coverage_end = cam.delta_seconds + source_duration
-        finite_ends.append(coverage_end)
-
+    # The first input defines the reference timeline. Partial cameras must never
+    # shorten the event merely because their coverage ends early.
     start = max(0.0, float(args.start))
-    duration = min(finite_ends)
+    duration = durations[0]
     end = duration if args.end is None else min(duration, float(args.end))
     if end <= start:
         raise SystemExit("Selected analysis window is empty.")
@@ -180,7 +175,7 @@ def validate(args: argparse.Namespace) -> int:
 
 def render(args: argparse.Namespace) -> int:
     cmd = ["polysync", "render-cuts", args.edl, "--out", args.output]
-    cmd.extend(args.polysync_args)
+    cmd.extend(args.passthrough)
     run(cmd)
     return 0
 
@@ -229,7 +224,12 @@ def parser() -> argparse.ArgumentParser:
     r = sub.add_parser("render", help="Render hard cuts with polysync render-cuts.")
     r.add_argument("edl")
     r.add_argument("--output", default="multicam.mp4")
-    r.add_argument("polysync_args", nargs=argparse.REMAINDER)
+    r.add_argument(
+        "--passthrough",
+        nargs=argparse.REMAINDER,
+        default=[],
+        help="Forward all remaining arguments to polysync render-cuts.",
+    )
     r.set_defaults(func=render)
     return p
 

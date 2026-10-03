@@ -96,10 +96,10 @@ directing-multicam build .directing-multicam/manifest.json decisions.json --outp
 directing-multicam render edl.json --output preview.mp4
 ```
 
-Renderer options can be forwarded after `--`:
+Renderer options can be forwarded with `--passthrough`:
 
 ```bash
-directing-multicam render edl.json --output preview.mp4 -- \
+directing-multicam render edl.json --output preview.mp4 --passthrough \
   --width 1080 --height 1920 --fill --log slog3
 ```
 

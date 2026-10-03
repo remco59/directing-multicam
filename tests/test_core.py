@@ -56,3 +56,14 @@ def test_rejects_short_interior_shot():
     }
     with pytest.raises(ValueError, match="below min_shot"):
         build_polysync_edl(manifest(), decisions)
+
+
+def test_reference_can_outlive_partial_camera():
+    decisions = {
+        "decisions": [
+            {"cam": 0, "start": 0.0, "end": 9.0},
+            {"cam": 1, "start": 9.0, "end": 10.0},
+        ]
+    }
+    result = build_polysync_edl(manifest(), decisions)
+    assert result["duration_sec"] == 10.0
